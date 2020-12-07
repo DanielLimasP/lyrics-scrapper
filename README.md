@@ -1,0 +1,1 @@
+# This is a lyrics scrapper, made to obtain all the lyrics in AZlyrics.com
