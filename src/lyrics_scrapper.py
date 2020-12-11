@@ -1,8 +1,9 @@
-import bs4
-import re
-import requests
-from pathlib import Path
-import os
+from pathlib import Path # Path for getting cwd
+import bs4 # BeautifulSoup for html processing
+import re # For regexp processing within html docs
+import requests # For Making the initial request
+import argparse # For creating a simple argparser
+import os # Getting dirs and stuff
 
 # ANSI COLORS:
 RED = "\033[0;31m"
