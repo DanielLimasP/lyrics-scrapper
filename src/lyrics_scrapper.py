@@ -11,10 +11,11 @@ CYAN = "\033[0;36m"
 LIGHT_GRAY = "\033[0;37m"
 
 class Lyrics_Scrapper:
-    def __init__(self):
+    def __init__(self, args):
         super().__init__()
         # It's kinda redundant to have both the url and the res together
-        self.url = 'https://www.azlyrics.com/lyrics/strokes/undercontrol.html'
+        self.args = args
+        self.url = args['url']
         self.res = requests.get(self.url)
         self.soup = bs4.BeautifulSoup(self.res.text, 'html.parser')
 
