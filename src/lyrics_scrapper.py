@@ -80,9 +80,17 @@ class Lyrics_Scrapper:
         albums_title = self.get_soup_content('.songinalbum_title')
         info = self.get_soup_content('b')
 
-        artist = str(info[0])
-        song_title = str(info[1])
-        albums_title = str(info[2])
+        info_list = []
+
+        for element in info:
+            b_strip = re.compile(r'<b>')
+            bb_strip = re.compile(r'</b>')
+            # b_strip.sub returns a string, so it's ok to use it as an arg
+            info_list.append(bb_strip.sub('', b_strip.sub('', str(element))))
+
+        artist = str(info_list[0])
+        song_title = str(info_list[1])
+        albums_title = str(info_list[2])
 
         return (artist, song_title, albums_title)
 
