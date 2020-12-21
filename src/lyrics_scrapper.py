@@ -36,7 +36,18 @@ class Lyrics_Scrapper:
         (Almost) Gets the req song lyrics and saves it to a file
         '''
         content = self.get_soup_content('.main-page')
-        artist, song, album = self.get_song_info()
+
+        info_len = len(self.get_song_info())
+
+        # Artist, then song, then album
+        if info_len == 3:
+            artist, song, album = self.get_song_info()
+        else:
+            info = self.get_song_info()
+            artist = info[0]
+            song = info[1]
+            album = info[2]
+
 
         print('Dowloading lyrics...')
         print(CYAN + '''
@@ -48,7 +59,7 @@ class Lyrics_Scrapper:
         # Need to get rid of the " " and replace spaces with _
         song = song[1:-1]
         song = song.replace(' ', '_')
-        # Same for album
+        # Same for the album
         album = album[1:-1]
         album = album.replace(' ', '_')
         artist = artist.replace(' ', '_')
@@ -65,16 +76,16 @@ class Lyrics_Scrapper:
         get_song_info: 
         Gets the Artist, the song name and the album from curr page
         '''
-        content = self.get_soup_content('b')
-        info_list = []
+        # Content is a list of ocurrences of said class
+        albums_title = self.get_soup_content('.songinalbum_title')
+        info = self.get_soup_content('b')
 
-        for element in content:
-            b_strip = re.compile(r'<b>')
-            bb_strip = re.compile(r'</b>')
-            # b_strip.sub returns a string, so it's ok to use it as an arg
-            info_list.append(bb_strip.sub('', b_strip.sub('', str(element))))
+        artist = str(info[0])
+        song_title = str(info[1])
+        albums_title = str(info[2])
 
-        return info_list
+        return (artist, song_title, albums_title)
+
 
     def get_soup_content(self, attr):
         '''

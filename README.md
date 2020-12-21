@@ -1,1 +1,3 @@
 # This is a lyrics scrapper, made to obtain all the lyrics in AZlyrics.com
+
+Remember to create a "Lyrics" folder or else the script wont work...
