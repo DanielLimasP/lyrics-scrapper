@@ -39,34 +39,40 @@ class Lyrics_Scrapper:
 
         info_len = len(self.get_song_info())
 
-        # Artist, then song, then album
-        if info_len == 3:
-            artist, song, album = self.get_song_info()
-        else:
-            info = self.get_song_info()
-            artist = info[0]
-            song = info[1]
-            album = info[2]
+        # Artist, then song, then albums. Albums is the original list of albums
+        info_list = self.get_song_info()
+        artist = info_list[0]
+        song = info_list[1]
+        albums = info_list[2]
 
+        print(albums)
 
-        print('Dowloading lyrics...')
-        print(CYAN + '''
-        artist: {}
-        album: {}
-        song: {}
-        '''.format(artist, album, song)+ LIGHT_GRAY)
-
+        # Better albums is a list of the names of the albums without _ and ""
+        better_albums = []
+        
         # Need to get rid of the " " and replace spaces with _
         song = song[1:-1]
         song = song.replace(' ', '_')
         # Same for the album
-        album = album[1:-1]
-        album = album.replace(' ', '_')
+        for album in albums:
+            album = album[1:-1]
+            album = album.replace(' ', '_')
+            better_albums.append(album)
+
         artist = artist.replace(' ', '_')
+
+        print('Dowloading lyrics...')
+        print(CYAN + '''
+        artist: {}
+        albums: {}
+        song: {}
+        '''.format(artist, str(better_albums), song)+ LIGHT_GRAY)
 
         song = song + '.html'
 
-        print(self.save_content(content, song, artist, album))
+        # For each album in better albums, save the song in that album
+        for album in better_albums:
+            print(self.save_content(content, song, artist, album))
 
     def get_song_info(self):
         '''
@@ -77,22 +83,22 @@ class Lyrics_Scrapper:
         Gets the Artist, the song name and the album from curr page
         '''
         # Content is a list of ocurrences of said class
-        albums_title = self.get_soup_content('.songinalbum_title')
         info = self.get_soup_content('b')
 
         info_list = []
 
+        # Gets rid of the <b></b> tags
         for element in info:
             b_strip = re.compile(r'<b>')
-            bb_strip = re.compile(r'</b>')
+            b_strip_compliment = re.compile(r'</b>')
             # b_strip.sub returns a string, so it's ok to use it as an arg
-            info_list.append(bb_strip.sub('', b_strip.sub('', str(element))))
+            info_list.append(b_strip_compliment.sub('', b_strip.sub('', str(element))))
 
-        artist = str(info_list[0])
-        song_title = str(info_list[1])
-        albums_title = str(info_list[2])
+        artist = info_list[0]
+        song = info_list[1]
+        albums = info_list[2:]
 
-        return (artist, song_title, albums_title)
+        return [artist, song, albums]
 
 
     def get_soup_content(self, attr):
@@ -106,7 +112,6 @@ class Lyrics_Scrapper:
         soup_content = self.soup.select(attr)
         return soup_content
 
-    # TODO: Fix the problem with special chars when saving
     def save_content(self, content, song, artist, album):
         '''
         :type attr: str, str, str
@@ -135,7 +140,7 @@ class Lyrics_Scrapper:
                 new_file = open('Lyrics'+ '/' +artist+ '/' +album+ '/' +song, 'w+', encoding='utf-8')
                 new_file.write(str(content))
                 new_file.close()
-                return 'File saved'
+                return GREEN + 'File saved'+ LIGHT_GRAY 
         except Exception as ex:
             return RED +'There was a problem: {}'.format(ex)+ LIGHT_GRAY
             
